@@ -156,7 +156,7 @@ barProviderAssets = px.bar(ProviderAssets,x='provider_id', y='num_bikes_availabl
 # In[89]:
 
 
-#st.plotly_chart(barProviderAssets)
+st.plotly_chart(barProviderAssets)
 
 
 # In[ ]:
