@@ -1,19 +1,9 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# In[29]:
-
-
 import requests
 import datetime as dt
 import numpy as np
 import pandas as pd
 import streamlit as st
 import plotly.express as px
-
-
-# In[57]:
-
 
 # Providers.json abfragen
 url = 'https://www.sharedmobility.ch/providers.json'
@@ -26,29 +16,35 @@ name = [s['name'] for s in data['data']['providers']]
 # Create Dataframe providers
 header = ['provider_id', 'vehicle_type','name','last_updated']
 providers = pd.DataFrame(list(zip(provider_id, vehicle_type, name, last_updated)),columns =['provider_id', 'Type','Name','last_updated'])
-#providers
 
-
-# In[63]:
-
-
+# Dataframe mit Aktualisierungsstand vorbereiten
 # LastUpdated als Zeitobjekt
 providers['last_updated'] = pd.to_datetime(providers['last_updated'],unit='s')
-
 # Der jetztige Zeitstand in UTC
 now = dt.datetime.utcnow()
-
 # Berechnen wie lange seit letztem Update
-providers['delay'] = str(now - providers['last_updated'])
+providers['delay'] = now - providers['last_updated']
+# Delay in Minuten
+providers['DelayMinutes'] = round(providers['delay']/np.timedelta64(1,'m'),2)
+#Sortiere nach DelayMinutes
+providers = providers.sort_values('DelayMinutes', ascending=False)
+providers_Cleaned = providers[['provider_id', 'Type', 'DelayMinutes']]
 
+# Funktion welche Zellen farblich hervorhebt.
+def colorcells(val):
+    color = 'green' 
+    if val > 15:
+        color = 'red'
+    elif val > 5:
+        color = 'orange'
+    else: 
+        'green'
+    
+    
+    return 'background-color: %s' % color
 
-# In[64]:
+providers_Cleaned = providers_Cleaned.style.applymap(colorcells, subset = ['DelayMinutes'])
 
-
-providers_sort = providers.sort_values('delay', ascending=False)
-
-
-# In[33]:
 
 
 # Free_bikes_status.json abfragen
@@ -138,7 +134,7 @@ st.markdown('''Dieses Dashboard zeigt die Verfügbarkeit und Aktualität der Dat
 
 
 st.header('Übersicht der Datenaktualität')
-st.dataframe(providers_sort)
+st.dataframe(providers_Cleaned)
 
 
 # In[87]:
