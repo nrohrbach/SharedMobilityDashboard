@@ -38,7 +38,7 @@ def colorcells(val):
     elif val > 5:
         color = 'orange'
     else: 
-        'green'
+        color = 'green'
     
     
     return 'background-color: %s' % color
