@@ -171,7 +171,7 @@ st.markdown('''Dieses Dashboard gibt eine Übersicht der Inhalte und der Aktuali
 
 
 st.header('Übersicht der Datenaktualität')
-st.dataframe(providers_sort)
+st.dataframe(providers_Cleaned)
 
 
 # In[92]:
